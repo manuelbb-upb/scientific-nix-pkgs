@@ -1,0 +1,65 @@
+{
+  python-pkg,
+  python-execname,
+  makeWrapper,
+  NIX_LD_LIBRARY_PATH
+}:
+rec {
+  python-without-flaky-tests = python-pkg.override {
+    # `poetry` depends on `virtualenv`.
+    # Somehow, our wrapper script (below) -- or some nix machanism --
+    # messes with bash output with virtual environments.
+    # This causes tests to fail. I dissable them in `packageOverrides`:
+    self = python;
+    packageOverrides = (fin: (prev: {
+      virtualenv = prev.virtualenv.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or []) ++ [
+          "test_bash"
+        ];
+      });
+      # `xdist` seems to cause problems non-deterministically...
+      # (see, e.g., https://github.com/NixOS/nixpkgs/issues/230597)
+      # For me, the following test failed before (in a shell with `numpy`),
+      # so I disable them here:
+      xdist = prev.pytest-xdist.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or []) ++ [
+          "test_max_worker_restart_tests_queued"
+        ];
+      });
+      # Likewise, `watchdog` has some flaky tests...
+      # see https://github.com/gorakhargosh/watchdog/issues/973
+      watchdog = prev.watchdog.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or []) ++ [
+          "test_auto_restart_on_file_change_debounce"
+        ];
+      });
+      pytest-subprocess = prev.pytest-subprocess.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or []) ++ [
+          "test_multiple_wait"
+        ];
+      });
+    }));
+  };
+
+  # This does not work... `poetry` needs `python.override`...
+  # python = pkgs.symlinkJoin {
+  #   name = "python";
+  #   paths = [ python-without-virtualenv-test-bash ];
+  #   buildInputs = [ pkgs.makeWrapper ];
+  #   postBuild = ''
+  #     wrapProgram "$out/bin/python3.12" --prefix "LD_LIBRARY_PATH" : "${NIX_LD_LIBRARY_PATH}"
+  #   '';
+  # };
+  # TODO: `lib.customization.extendDerivation`? ... possibly also issues with overriding ...
+
+  python = python-without-flaky-tests.overrideAttrs ( previousAttrs: {
+    # It seems that we actually need `overrideAttrs` here.
+    # (causing a complete rebuild of python and tools depending on it).
+    nativeBuildInputs = previousAttrs.nativeBuildInputs ++ [
+      makeWrapper
+    ];
+    postInstall = previousAttrs.postInstall + ''
+      wrapProgram "$out/bin/${python-execname}" --prefix "LD_LIBRARY_PATH" : "${NIX_LD_LIBRARY_PATH}"
+    '';
+  });
+}
