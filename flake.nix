@@ -7,35 +7,36 @@
   let
     # As far as I know, Matlab only works on x86:
     system = "x86_64-linux";
-    # Import packages and lib:
+    # Import packages:
     pkgs = import nixpkgs { inherit system; };
-    lib = pkgs.lib;
-
-    output-function = import ./patcher.nix {
-      inherit pkgs lib;
-    };
 
     python-pkg = pkgs.python312;
-    python-execname = "python3.12";
     julia-version = "1.11.1";
-    julia-sha = "";
-    output-set = output-function {
-      inherit python-pkg python-execname;
-      inherit julia-version julia-sha;
+    julia-sha-for-version = "";
+    julia-add-opengl-libs = true; # so `GLMakie` works
+    output-set = import ./patcher.nix {
+      inherit pkgs;
+      inherit python-pkg ;
+      inherit julia-version julia-sha-for-version julia-add-opengl-libs;
     };
+    pkgs-patched = output-set.pkgs-patched;
 
   in
   rec {
-    # make patched packages availabe as flake output
-    inherit output-function;
-    inherit (output-set) pkgs-patched matlab-pkg ld-shellHook;
-
+    inherit (output-set) ld-shellHook;
+    # make patched packages availabe:
     packages.${system} = {
-      matlab = matlab-pkg;
-    } // pkgs-patched ;
+      matlab = output-set.matlab-pkg;
+    } // {
+      inherit (pkgs-patched) python poetry julia;
+    };
 
     devShells.${system}.default = pkgs.mkShell{
       shellHook = ld-shellHook;
+    };
+
+    tools.${system} = {
+      inherit (pkgs-patched) python-patcher;
     };
   };
 }

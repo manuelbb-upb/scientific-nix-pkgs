@@ -1,16 +1,16 @@
 {
-  python-pkg,
-  python-execname,
   makeWrapper,
   NIX_LD_LIBRARY_PATH
 }:
-rec {
+python-pkg:
+let
+  python-execname = python-pkg.executable;
   python-without-flaky-tests = python-pkg.override {
     # `poetry` depends on `virtualenv`.
     # Somehow, our wrapper script (below) -- or some nix machanism --
     # messes with bash output with virtual environments.
     # This causes tests to fail. I dissable them in `packageOverrides`:
-    self = python;
+    self = python-without-flaky-tests;
     packageOverrides = (fin: (prev: {
       virtualenv = prev.virtualenv.overridePythonAttrs (old: {
         disabledTests = (old.disabledTests or []) ++ [
@@ -52,7 +52,7 @@ rec {
   # };
   # TODO: `lib.customization.extendDerivation`? ... possibly also issues with overriding ...
 
-  python = python-without-flaky-tests.overrideAttrs ( previousAttrs: {
+  python-patched = python-without-flaky-tests.overrideAttrs ( previousAttrs: {
     # It seems that we actually need `overrideAttrs` here.
     # (causing a complete rebuild of python and tools depending on it).
     nativeBuildInputs = previousAttrs.nativeBuildInputs ++ [
@@ -62,4 +62,5 @@ rec {
       wrapProgram "$out/bin/${python-execname}" --prefix "LD_LIBRARY_PATH" : "${NIX_LD_LIBRARY_PATH}"
     '';
   });
-}
+in
+  python-patched

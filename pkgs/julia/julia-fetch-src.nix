@@ -1,19 +1,10 @@
 {
-  runCommand,
-  stdenv,
-  symlinkJoin,
-  fetchurl,
-  makeWrapper,
   lib,
-  curl,
-  NIX_LD_LIBRARY_PATH,
-  NIX_LD,
-  julia-version ? "1.11.1",
-  julia-sha ? "",
+  fetchurl,
 }:
-
 let
   # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --unpack --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.1-linux-x86_64.tar.gz)
+
   version-sha256 = {
     "1.11.1" = "sha256-zKjRPcRQfk9ioSkyIpMxPuV08wDU3559swt7QcX4qPM=";
     "1.11.0" = "sha256-vPgVVT/aLteRBSTIyqGJyOgZGkCnmd2LX77Q2d1riCw=";
@@ -32,55 +23,19 @@ let
     "1.6.7" = "sha256-bEUi1ZXky80AFXrEWKcviuwBdXBT0gc/mdqjnkQrKjY=";
   };
 
-  fetch-julia-src = version: let
+  julia-fetch-src = version: (sha-for-version: let
     url = "https://julialang-s3.julialang.org/bin/linux/x64/${
       lib.versions.majorMinor version
     }/julia-${version}-linux-x86_64.tar.gz";
   in fetchurl {
     inherit url;
-    sha256 = (if julia-sha == "" then
+    sha256 = (if sha-for-version == "" then
       (if (builtins.hasAttr version version-sha256) then
         version-sha256.${version}
       else
         version-sha256."1.11.1")
      else
-      julia-sha);
-  };
-
-  make-julia-from-version = version: runCommand "julia-${version}" {
-    src = fetch-julia-src version;
-    nativeBuildInputs = [
-      makeWrapper   # to have shell script `wrapProgram` available
-      /*
-      curl          # For the case that shipped libcurl is not used,
-                    # we need at least curl 8.11, I think...
-                    # https://github.com/curl/curl/issues/14860
-                    # https://github.com/JuliaInterop/CxxWrap.jl/issues/407
-      */
-    ];
-  } ''
-    mkdir $out
-    tar xf $src -C $out --strip-components=1
-
-    chmod -R u+w $out
-    chmod a+x $out/bin/julia
-    wrapProgram $out/bin/julia \
-      --set "NIX_LD_LIBRARY_PATH" "" \
-      --set "NIX_LD" "${NIX_LD}" \
-      --set "LD_LIBRARY_PATH" "/run/opengl-driver/lib/" \
-      --set "LD_PRELOAD" ${stdenv.cc.cc.lib}/lib/libstdc++.so.6
-  '';
-  /*
-        --prefix "NIX_LD_LIBRARY_PATH" : "${NIX_LD_LIBRARY_PATH}" \
-        --prefix "PATH" : "${lib.makeBinPath [ curl ]}"
-  */
-
-  julia = make-julia-from-version julia-version;
+      sha-for-version);
+    });
 in
-{
-  inherit julia;
-}
-
-
-
-
+  julia-fetch-src

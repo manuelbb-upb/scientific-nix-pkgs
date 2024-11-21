@@ -1,13 +1,11 @@
 {
-  pkgs,
+  formats,
   lib,
-  pname,
-  version,
-  root,
+  root ? "\${MATLAB_INSTALL_DIR}",
+  pname ? "matlab",
+  version ? "0.0.1",
 }:
-{
-  py-pkgs,
-}:
+py-pkgs:
 
 assert lib.isString root;
 
@@ -57,7 +55,7 @@ let
     };
   };
 
-  pyproject-toml = (pkgs.formats.toml {}).generate "pyproject.toml" pyproject;
+  pyproject-toml = (formats.toml {}).generate "pyproject.toml" pyproject;
 in
   py-pkgs.buildPythonPackage {
     inherit pname version;
@@ -77,9 +75,9 @@ in
 
       # Write `_matlab.pth`.
       # Lines starting with `import` are executed.
-      cat <<- EOF > "_${pname}.pth"
+      cat <<- "EOF" > "_${pname}.pth"
       import os, sys; sys.path.insert(0, os.path.join(os.path.expandvars("${root}"), "extern", "engines", "python", "dist"));
-      import path_hook  # executes code to prepend to `sys.meta_path`
+      import path_hook  # executes code to prepend to sys.meta_path
       EOF
     '';
   }
