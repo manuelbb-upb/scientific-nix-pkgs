@@ -8,8 +8,8 @@
   poetry-post-overrides ? {},
 }:
 let
-  python-patched = python-patcher python3;
-  python = python-patched.override {
+  python-patched = if (python3.passthru.is_matlab_patched or false) then python3 else python-patcher python3;
+  python-without-flaky-tests = python-patched.override {
     # `poetry` depends on `virtualenv`.
     # Somehow, our wrapper script (below) -- or some nix machanism --
     # messes with bash output with virtual environments.
@@ -47,13 +47,13 @@ let
 
   poetry-pre-pre-patched = poetry.override poetry-pre-overrides;
   poetry-pre-patched = poetry-pre-pre-patched.override {
-    python3 = python;
+    python3 = python-without-flaky-tests;
   };
   poetry-post-pre-patched = poetry-pre-patched.override poetry-post-overrides;
 
   poetry-patched = writeShellScriptBin "poetry" ''
       export LD_LIBRARY_PATH="${NIX_LD_LIBRARY_PATH}:''${LD_LIBRARY_PATH}"
-      exec -a "$0" "${poetry-pre-patched}/bin/poetry" "$@"
+      exec -a "$0" "${poetry-post-pre-patched}/bin/poetry" "$@"
   '';
 in
   poetry-patched
@@ -87,4 +87,3 @@ in
 #       '';
 #     }
 #   ));
-}

@@ -28,7 +28,7 @@ let
   python = python-patcher python-pkg;
 
   poetry = pkgs.callPackage ./poetry.nix {
-    inherit python-patcher python-pkg;
+    inherit python-patcher;
     inherit poetry-pre-overrides;
     inherit poetry-post-overrides;
     python3 = python-pkg;

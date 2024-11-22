@@ -38,5 +38,12 @@ let
       matlab = (matlab-engine py-pkgs-prev);
     };
   };
+
+  python-final = python-with-matlab // {
+    passthru = python-with-matlab.passthru // {
+      is_matlab_patched = true;
+    };
+  };
+
 in
-  python-with-matlab
+  python-final
