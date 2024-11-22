@@ -48,6 +48,9 @@ let
     # Also include the hook
     tool.hatch.build.targets.wheel.force-include."path_hook.py" = "path_hook.py";
 
+    # Also copy pyproject.toml for poetry trick 
+    tool.hatch.build.targets.wheel.force-include."pyproject.toml" = "pyproject.toml";
+
     # Build editable package using hatchling
     build-system = {
       requires = [ "hatchling" ];
