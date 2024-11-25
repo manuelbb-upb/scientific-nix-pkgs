@@ -41,12 +41,15 @@
 
     templates = {
       julia = {
+        description = "Devshell with unpatched Julia and preseeded library path";
         path = ./templates/julia;
       };
       python = {
+        description = "Devshell with patched Python for nix-ld.";
         path = ./templates/python;
       };
       poetry = {
+        description = "Devshell with patched Python and poetry for nix-ld.";
         path = ./templates/poetry;
       };
     };
