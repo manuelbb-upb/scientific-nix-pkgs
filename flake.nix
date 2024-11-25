@@ -38,5 +38,17 @@
     tools.${system} = {
       inherit (pkgs-patched) python-patcher;
     };
+
+    templates = {
+      julia = {
+        path = ./templates/julia;
+      };
+      python = {
+        path = ./templates/python;
+      };
+      poetry = {
+        path = ./templates/poetry;
+      };
+    };
   };
 }
