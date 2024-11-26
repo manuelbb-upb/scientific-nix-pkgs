@@ -61,7 +61,7 @@ let
       inherit root; 
     };
     python-with-matlab = python-with-or-without-tests.override {
-      self = python-patched;
+      self = python-with-matlab;
       packageOverrides = py-pkgs-fin: py-pkgs-prev: {
         matlab = (matlab-engine py-pkgs-prev);
       };
