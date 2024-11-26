@@ -47,12 +47,15 @@ let
       '';
     });
 
-    python-with-or-without-tests = python-patched.override {
-      self = python-with-or-without-tests;
-      packageOverrides = (fin-pkgs: prev-pkgs: (
-        lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
-      );
-    };
+    python-with-or-without-tests = if python-doCheck then
+      python-patched
+    else
+      python-patched.override {
+        self = python-with-or-without-tests;
+        packageOverrides = (fin-pkgs: prev-pkgs: (
+          lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
+        );
+      };
 
     matlab-engine = callPackage ./python-matlab-engine {
       inherit root; 
