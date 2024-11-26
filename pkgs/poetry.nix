@@ -1,4 +1,5 @@
 {
+  lib,
   writeShellScriptBin,
   poetry,
   python-patcher,
@@ -9,13 +10,13 @@
 }:
 let
   python-patched = python-patcher python3;
-  python-without-flaky-tests = python-patched.override {
-    # `poetry` depends on `virtualenv`.
-    # Somehow, our wrapper script (below) -- or some nix machanism --
-    # messes with bash output with virtual environments.
-    # This causes tests to fail. I dissable them in `packageOverrides`:
-    self = python-without-flaky-tests;
-    packageOverrides = (fin: (prev: {
+  
+  # `poetry` depends on `virtualenv`.
+  # Somehow, our wrapper script (below) -- or some nix machanism --
+  # messes with bash output with virtual environments.
+  # This causes tests to fail. I dissable them in `packageOverrides`:
+  python-extension-no-flaky-tests = (fin: prev: 
+    {
       virtualenv = prev.virtualenv.overridePythonAttrs (old: {
         disabledTests = (old.disabledTests or []) ++ [
           "test_bash"
@@ -42,8 +43,14 @@ let
           "test_multiple_wait"
         ];
       });
-    }));
-  };
+    }
+  );
+  python-without-flaky-tests = python-patched.override (old: {
+    self = python-without-flaky-tests;
+    packageOverrides = lib.composeManyExtensions (
+      (if old ? packageOverrides then [ old.packageOverrides ] else []) ++ [ ]
+    );
+  });
 
   poetry-pre-pre-patched = poetry.override poetry-pre-overrides;
   poetry-pre-patched = poetry-pre-pre-patched.override {
@@ -51,9 +58,17 @@ let
   };
   poetry-post-pre-patched = poetry-pre-patched.override poetry-post-overrides;
 
+  poetry-nearly-final = poetry-post-pre-patched.overridePythonAttrs (old: {
+    doCheck = python-patched.passthru.patcher-attrs.python-doCheck;
+    pythonImportsCheck = if python-patched.passthru.patcher-attrs.python-doCheck then
+      old.pythonImportsCheck
+    else
+      [];
+  });
+
   poetry-patched = writeShellScriptBin "poetry" ''
       export LD_LIBRARY_PATH="${NIX_LD_LIBRARY_PATH}:''${LD_LIBRARY_PATH}"
-      exec -a "$0" "${poetry-post-pre-patched}/bin/poetry" "$@"
+      exec -a "$0" "${poetry-nearly-final}/bin/poetry" "$@"
   '';
 in
   poetry-patched

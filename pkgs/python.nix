@@ -25,16 +25,6 @@ let
     # };
     # TODO: `lib.customization.extendDerivation`? ... possibly also issues with overriding ...
     
-    deactivate-tests = py-pkg: if (
-      lib.attrsets.isDerivation py-pkg && builtins.hasAttr "overridePythonAttrs" py-pkg
-    ) then
-      py-pkg.overridePythonAttrs {
-        doCheck = false;
-        pythonImportsCheck = [];
-      }
-    else
-      py-pkg;
-
     python-execname = python-pkg.executable;
     # It seems that we actually need `overrideAttrs` here.
     # (causing a complete rebuild of python and tools depending on it).
@@ -46,37 +36,48 @@ let
       postInstall = previousAttrs.postInstall + ''
         wrapProgram "$out/bin/${python-execname}" --prefix "LD_LIBRARY_PATH" : "${NIX_LD_LIBRARY_PATH}"
       '';
-    });
 
-    python-with-or-without-tests = if python-doCheck then
-      python-patched
-    else
-      python-patched.override {
-        self = python-patched;
-        packageOverrides = (fin-pkgs: prev-pkgs: (
-          lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
-        );
-      };
-
-    matlab-engine = callPackage ./python-matlab-engine {
-      inherit root; 
-    };
-    python-with-matlab = python-with-or-without-tests.override {
-      self = python-with-matlab;
-      packageOverrides = py-pkgs-fin: py-pkgs-prev: {
-        matlab = (matlab-engine py-pkgs-prev);
-      };
-    };
-
-    # add attribute `is_matlab_patched` to avoid double patching
-    python-with-attrs = python-with-matlab // {
-      passthru = python-with-matlab.passthru // {
+      passthru = previousAttrs.passthru // {
         patcher-attrs = {
           inherit python-doCheck;
           is_matlab_patched = true;
         };
       };
+    });
+
+    deactivate-tests = py-pkg: if (
+      lib.attrsets.isDerivation py-pkg && builtins.hasAttr "overridePythonAttrs" py-pkg
+    ) then
+      py-pkg.overridePythonAttrs {
+        doCheck = false;
+        pythonImportsCheck = [];
+      }
+    else
+      py-pkg;
+
+    py-pkgs-extension-tests = if python-doCheck then
+      (fin-pkgs: prev-pkgs: prev-pkgs)
+    else
+      (fin-pkgs: prev-pkgs: (
+        lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
+      );
+
+    matlab-engine = callPackage ./python-matlab-engine {
+      inherit root; 
     };
+    py-pkgs-extension-matlab = fin-pkgs: prev-pkgs: {
+      matlab = (matlab-engine prev-pkgs);
+    };
+
+    python-with-attrs = python-patched.override (old: {
+      self = python-with-attrs;
+      packageOverrides = lib.composeManyExtensions (
+        (if old ? packageOverrides then [ old.packageOverrides ] else []) ++ [ 
+          py-pkgs-extension-tests
+          py-pkgs-extension-matlab
+        ]
+      );
+    });
   in
     python-with-attrs;
 in
