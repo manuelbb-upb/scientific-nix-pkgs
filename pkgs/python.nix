@@ -9,8 +9,8 @@
 python-pkg:
 let
   python-final = if (
-    (python-pkg.patcher-attrs.is_matlab_patched or false) &&
-    ((python-pkg.patcher-attrs.python-doCheck or (!python-doCheck)) == python-doCheck)
+    (python-pkg.passthru.patcher-attrs.is_matlab_patched or false) &&
+    ((python-pkg.passthru.patcher-attrs.python-doCheck or (!python-doCheck)) == python-doCheck)
   ) then
     python-pkg
   else let
@@ -69,9 +69,11 @@ let
 
     # add attribute `is_matlab_patched` to avoid double patching
     python-with-attrs = python-with-matlab // {
-      patcher-attrs = {
-        inherit python-doCheck;
-        is_matlab_patched = true;
+      passthru = python-with-matlab.passthru // {
+        patcher-attrs = {
+          inherit python-doCheck;
+          is_matlab_patched = true;
+        };
       };
     };
   in
