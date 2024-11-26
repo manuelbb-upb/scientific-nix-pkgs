@@ -15,6 +15,10 @@ Rebuilds will take even longer.
 
 I have deactivated unit test by default to speed up builds.
 
+**Note** 
+`pkgs.replaceDependency` might actually safe us from compile time hell, especially for large
+packages like `torch`.
+
 # Matlab
 
 ## Implementation

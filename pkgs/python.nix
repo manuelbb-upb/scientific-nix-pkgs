@@ -3,6 +3,7 @@
   callPackage,
   makeWrapper,
   NIX_LD_LIBRARY_PATH,
+  add-matlab-to-python,
   root ? "\${MATLAB_INSTALL_DIR}",
   python-doCheck ? false,
 }:
@@ -62,23 +63,15 @@ let
         lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
       );
 
-    matlab-engine = callPackage ./python-matlab-engine {
-      inherit root; 
-    };
-    py-pkgs-extension-matlab = fin-pkgs: prev-pkgs: {
-      matlab = (matlab-engine prev-pkgs);
-    };
-
     python-with-attrs = python-patched.override (old: {
       self = python-with-attrs;
       packageOverrides = lib.composeManyExtensions (
         (if old ? packageOverrides then [ old.packageOverrides ] else []) ++ [ 
           py-pkgs-extension-tests
-          py-pkgs-extension-matlab
         ]
       );
     });
   in
-    python-with-attrs;
+    add-matlab-to-python python-with-attrs;
 in
   python-final

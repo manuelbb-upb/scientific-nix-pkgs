@@ -14,16 +14,35 @@
 }:
 let
 
-  csh = pkgs.callPackage ./csh.nix {};
-  julia-set = pkgs.callPackage ./julia/default.nix {
+  inherit (pkgs) lib callPackage;
+  csh = callPackage ./csh.nix {};
+  julia-set = callPackage ./julia/default.nix {
     inherit julia-version julia-sha-for-version NIX_LD;
     inherit julia-enable-matlab matlab_LD_LIBRARY_PATH;
     inherit julia-add-opengl-libs;
     tcsh = csh;
   };
+
+  matlab-engine-maker = callPackage ./python-matlab-engine {
+    inherit root; 
+  };
+  py-pkgs-extension-matlab = fin-pkgs: prev-pkgs: {
+    matlab = (matlab-engine-maker prev-pkgs);
+  };
+  add-matlab-to-python = python: let
+    python-with-matlab = python.override (old: {
+      self = python-with-matlab;
+      packageOverrides = lib.composeManyExtensions (
+        (if old ? packageOverrides then [ old.packageOverrides ] else []) ++ [ 
+          py-pkgs-extension-matlab
+        ]
+      );
+    });
+  in
+    python-with-matlab;
   
   python-patcher = pkgs.callPackage ./python.nix {
-    inherit root python-doCheck;
+    inherit root python-doCheck add-matlab-to-python;
     NIX_LD_LIBRARY_PATH = matlab_LD_LIBRARY_PATH;
   };
   python = python-patcher python-pkg;
@@ -41,4 +60,5 @@ rec {
   inherit csh;
   inherit python-patcher python;
   inherit poetry;
+  inherit matlab-engine-maker py-pkgs-extension-matlab add-matlab-to-python;
 }

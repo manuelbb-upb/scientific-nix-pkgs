@@ -25,6 +25,7 @@
   in
   rec {
     inherit (output-set) ld-shellHook;
+    inherit (pkgs-patched) add-matlab-to-python py-pkgs-extension-matlab matlab-engine-maker;
     # make patched packages availabe:
     packages.${system} = {
       matlab = output-set.matlab-pkg;
