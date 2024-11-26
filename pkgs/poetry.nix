@@ -8,7 +8,7 @@
   poetry-post-overrides ? {},
 }:
 let
-  python-patched = if (python3.passthru.is_matlab_patched or false) then python3 else (python-patcher python3);
+  python-patched = python-patcher python3;
   python-without-flaky-tests = python-patched.override {
     # `poetry` depends on `virtualenv`.
     # Somehow, our wrapper script (below) -- or some nix machanism --

@@ -11,12 +11,13 @@
     pkgs = import nixpkgs { inherit system; };
 
     python-pkg = pkgs.python312;
+    python-doCheck = false;
     julia-version = "1.11.1";
     julia-sha-for-version = "";
     julia-add-opengl-libs = true; # so `GLMakie` works
     output-set = import ./patcher.nix {
       inherit pkgs;
-      inherit python-pkg ;
+      inherit python-pkg python-doCheck;
       inherit julia-version julia-sha-for-version julia-add-opengl-libs;
     };
     pkgs-patched = output-set.pkgs-patched;

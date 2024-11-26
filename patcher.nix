@@ -1,6 +1,7 @@
 {
   pkgs,
   python-pkg ? pkgs.python312,
+  python-doCheck ? false,
   julia-version ? "1.11.1",
   julia-sha-for-version ? "",
   julia-enable-matlab ? true,
@@ -42,7 +43,7 @@ rec {
   # With the matlab library path, we can patch packages (python, poetry, etc.) to
   # use it for `LD_LIBRARY_PATH`:
   pkgs-patched = import ./pkgs/default.nix {
-    inherit pkgs python-pkg matlab_LD_LIBRARY_PATH NIX_LD;
+    inherit pkgs python-pkg python-doCheck matlab_LD_LIBRARY_PATH NIX_LD;
     inherit julia-version julia-sha-for-version julia-enable-matlab;
     inherit root;
   };

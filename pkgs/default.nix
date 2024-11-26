@@ -3,6 +3,7 @@
   python-pkg,
   matlab_LD_LIBRARY_PATH,
   NIX_LD,
+  python-doCheck ? false,
   julia-version ? "1.11.1",
   julia-sha-for-version ? "",
   julia-enable-matlab ? true,
@@ -22,7 +23,7 @@ let
   };
   
   python-patcher = pkgs.callPackage ./python.nix {
-    inherit root;
+    inherit root python-doCheck;
     NIX_LD_LIBRARY_PATH = matlab_LD_LIBRARY_PATH;
   };
   python = python-patcher python-pkg;

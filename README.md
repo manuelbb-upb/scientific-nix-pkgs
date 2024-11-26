@@ -13,6 +13,8 @@ If you use this package, rebuilds will take some time.
 Likewise, we patch `poetry` to use our custom python package.
 Rebuilds will take even longer.
 
+I have deactivated unit test by default to speed up builds.
+
 # Matlab
 
 ## Implementation
