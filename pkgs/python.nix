@@ -14,7 +14,6 @@ let
   ) then
     python-pkg
   else let
-    python-execname = python-pkg.executable;
     # This below does not work... `poetry` needs `python.override`...
     # python = pkgs.symlinkJoin {
     #   name = "python";
@@ -27,14 +26,16 @@ let
     # TODO: `lib.customization.extendDerivation`? ... possibly also issues with overriding ...
     
     deactivate-tests = py-pkg: if (
-      lib.attrsets.isDerivation py-pkg && builtins.hasAttr "overridePythonAttrs" py-pkg) then
-      (py-pkg.overridePythonAttrs {
+      lib.attrsets.isDerivation py-pkg && builtins.hasAttr "overridePythonAttrs" py-pkg
+    ) then
+      py-pkg.overridePythonAttrs {
         doCheck = false;
         pythonImportsCheck = [];
-      })
+      }
     else
       py-pkg;
 
+    python-execname = python-pkg.executable;
     # It seems that we actually need `overrideAttrs` here.
     # (causing a complete rebuild of python and tools depending on it).
     python-patched = python-pkg.overrideAttrs ( previousAttrs: {
@@ -51,7 +52,7 @@ let
       python-patched
     else
       python-patched.override {
-        self = python-with-or-without-tests;
+        self = python-patched;
         packageOverrides = (fin-pkgs: prev-pkgs: (
           lib.attrsets.mapAttrs (py-name: py-pkg: (deactivate-tests py-pkg)) prev-pkgs)
         );
