@@ -31,7 +31,8 @@ pkgs:
   zlib
 
   # These packages are needed since 2021b version
-  gnome2.gtk
+  #gnome2.gtk
+  gtk2
   at-spi2-atk
   at-spi2-core
   libdrm
