@@ -24,7 +24,7 @@
       packages = [
         (otherPkgs.julia.override {
           julia-version = "1.11.1";
-          julia-enable-matlab = true;
+          julia-enable-matlab = false;
           julia-add-opengl-libs = true;
         })
         otherPkgs.csh

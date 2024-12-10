@@ -30,7 +30,7 @@
     packages.${system} = {
       matlab = output-set.matlab-pkg;
     } // {
-      inherit (pkgs-patched) python poetry julia;
+      inherit (pkgs-patched) csh python poetry julia;
     };
 
     devShells.${system}.default = pkgs.mkShell{
