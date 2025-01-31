@@ -29,6 +29,7 @@ pkgs:
   procps
   unzip
   zlib
+  linux-pam
 
   # These packages are needed since 2021b version
   #gnome2.gtk
@@ -36,7 +37,8 @@ pkgs:
   at-spi2-atk
   at-spi2-core
   libdrm
-  #mesa.drivers
+  mesa.drivers
+
   mesa
 
   gcc
