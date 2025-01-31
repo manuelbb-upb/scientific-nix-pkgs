@@ -24,7 +24,6 @@ rec {
   # prepend custom library path to `NIX_LD_LIBRARY_PATH`:
   export NIX_LD_LIBRARY_PATH="${matlab_LD_LIBRARY_PATH}":''${NIX_LD_LIBRARY_PATH}
   # define dynamic linker:
-  #export NIX_LD="$(cat ${pkgs.stdenv.cc}/nix-support/dynamic-linker)"
   export NIX_LD="${NIX_LD}"
   # tell `envfs` to simulate files to exist in `/bin` and `/usr/bin`:
   export ENVFS_RESOLVE_ALWAYS=1

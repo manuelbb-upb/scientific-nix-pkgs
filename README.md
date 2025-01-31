@@ -45,6 +45,16 @@ home.sessionVariables = {
   MATLAB_INSTALL_DIR = "$HOME/bins/MATLAB/R2024b";
 };
 ```
+## Issues
+
+* *Wayland*: For me, the dev shell could launch the installer just fine in Wayland.  
+  If you encounter issues, see the [arch wiki](https://wiki.archlinux.org/title/MATLAB#Running_on_Wayland).
+* GUI not starting: This nearly drove me crazy, because `journalctl` gave messages indicating GPU issues.  
+  But it was an incompatible library shipped with Matlab (R2024b).
+  ```
+    cd ${MATLAB_INSTALL_DIR}/sys/os/glnxa64
+    mv libstdc++.so.6 libstdc++.so.6.distlink
+  ```
 
 # Julia
 
