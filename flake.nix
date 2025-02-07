@@ -7,36 +7,48 @@
   let
     # As far as I know, Matlab only works on x86:
     system = "x86_64-linux";
-    # Import packages:
-    pkgs = import nixpkgs { inherit system; };
+    # Propagate function arguments lazily with callPackage pattern, see
+    # https://nixos.org/guides/nix-pills/13-callpackage-design-pattern.html
+    nixpkgs = import nixpkgs { inherit system; };
+    allPkgs = nixpkgs // pkgs;
+    callPackage =
+      path: overrides:
+      let
+        f = import path;
+      in
+        f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // overrides);
 
-    python-pkg = pkgs.python312;
-    python-doCheck = false;
-    julia-version = "1.11.1";
-    julia-sha-for-version = "";
-    julia-add-opengl-libs = true; # so `GLMakie` works
-    output-set = import ./patcher.nix {
-      inherit pkgs;
-      inherit python-pkg python-doCheck;
-      inherit julia-version julia-sha-for-version julia-add-opengl-libs;
+    pkgs = rec {
+      NIX_LD = callPackage ./pkgs/nix-ld-env-var.nix;
+      # define LD_LIBRARY_PATH prefixes and matlab package;
+      matlab-set = callPackage ./pkgs/matlab/default.nix {
+        dir-env-var = "MATLAB_INSTALL_DIR";
+      };
+      inherit (matlab-set) matlab_LD_LIBRARY_PATH matlab-shellHook matlab-shell matlab; 
+    
+      # wrap `tcsh` such that it can be called as `csh`:
+      csh = callPackage ./pkgs/csh.nix;
+
+      julia-set = callPackage ./pkgs/julia/default.nix {
+        version = "1.11.1";
+        sha-for-version = "";
+        add-opengl-libs = true;
+        enable-matlab = false;
+      };
+      inherit (julia-set) julia-bin julia-ld;
     };
-    pkgs-patched = output-set.pkgs-patched;
 
   in
   rec {
-    inherit (output-set) ld-shellHook;
-    inherit (pkgs-patched) add-matlab-to-python py-pkgs-extension-matlab matlab-engine-maker;
+    inherit (pkgs) matlab-shellHook matlab_LD_LIBRARY_PATH NIX_LD;
     # make patched packages availabe:
     packages.${system} = {
-      matlab = output-set.matlab-pkg;
-    } // {
-      inherit (pkgs-patched) csh python poetry julia;
+      inherit (pkgs) csh julia-bin julia-ld matlab matlab-shell;
     };
 
-    devShells.${system}.default = pkgs.mkShell{
-      shellHook = ld-shellHook;
-    };
+    devShells.${system}.default = pkgs.matlab-shell;
 
+    /*
     tools.${system} = {
       inherit (pkgs-patched) python-patcher;
     };
@@ -55,5 +67,6 @@
         path = ./templates/poetry;
       };
     };
+    */
   };
 }

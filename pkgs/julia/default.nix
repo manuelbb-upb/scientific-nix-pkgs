@@ -1,28 +1,19 @@
 {
   callPackage,
-  lib,
-  fetchurl,
-  tcsh,
-  NIX_LD,
-  julia-version ? "1.11.1",
-  julia-sha-for-version ? "",
-  julia-enable-matlab ? true,
-  julia-add-opengl-libs ? true,
+  NIX_LD ? "",
+  version ? "1.11.1",
+  sha-for-version ? "",
+  add-opengl-libs ? true,
+  enable-matlab ? false,
   matlab_LD_LIBRARY_PATH ? "",
 }:
-rec {
-  julia-fetch-src = import ./julia-fetch-src.nix {
-    inherit fetchurl lib;
-  };
+let
+  julia-src = callPackage ./julia-fetch-src.nix;
 
-  julia-bin = callPackage ./julia-bin.nix {
-    inherit julia-fetch-src julia-version julia-sha-for-version;
-  };
+  julia-bin = callPackage ./julia-make-bin.nix;
 
-  julia = callPackage ./julia.nix {
-    inherit julia-bin julia-version julia-sha-for-version NIX_LD;
-    inherit julia-enable-matlab matlab_LD_LIBRARY_PATH;
-    inherit julia-add-opengl-libs;
-    inherit tcsh;
-  };
+  julia-ld = callPackage ./julia-prefixed.nix;
+in
+{
+  inherit julia-bin julia-ld;
 }
