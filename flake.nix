@@ -1,9 +1,14 @@
 {
   description = "Tools for working with Matlab in NixOs";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-  outputs = { self, nixpkgs }:
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    vscode-local = {
+      url = "./pkgs/vscode";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+  outputs = { self, nixpkgs, vscode-local }:
   let
     # As far as I know, Matlab only works on x86:
     system = "x86_64-linux";
@@ -46,12 +51,17 @@
 
       poetry-ld = callOurPackage ./pkgs/poetry/default.nix {};
     };
+
+    vpkgs = vscode-local.packages.${system};
+    vs-marketplace-extensions = vscode-local.${system}.vs-marketplace-extensions;
   in
   rec {
     inherit (pkgs) NIX_LD matlab-engine;
+    inherit vs-marketplace-extensions;
     # make patched packages availabe:
     packages.${system} = {
       inherit (pkgs) csh julia-bin julia-ld matlab python-ld python-with-mlab poetry-ld;
+      inherit (vpkgs) vscodium-with-defaults vscodium-local;
     };
 
     devShells.${system}.default = pkgs.matlab.shell;

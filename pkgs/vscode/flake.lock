@@ -57,7 +57,6 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils_2",
         "nixpkgs": [
-          "vscode-local",
           "nixpkgs"
         ]
       },
@@ -77,15 +76,15 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1731139594,
-        "narHash": "sha256-IigrKK3vYRpUu+HEjPL/phrfh7Ox881er1UEsZvw9Q4=",
-        "owner": "NixOS",
+        "lastModified": 1732014248,
+        "narHash": "sha256-y/MEyuJ5oBWrWAic/14LaIr/u5E0wRVzyYsouYY3W6w=",
+        "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "76612b17c0ce71689921ca12d9ffdc9c23ce40b2",
+        "rev": "23e89b7da85c3640bbc2173fe04f4bd114342367",
         "type": "github"
       },
       "original": {
-        "owner": "NixOS",
+        "owner": "nixos",
         "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
@@ -93,8 +92,9 @@
     },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs",
-        "vscode-local": "vscode-local"
+        "flake-utils": "flake-utils",
+        "nix-vscode-extensions": "nix-vscode-extensions",
+        "nixpkgs": "nixpkgs"
       }
     },
     "systems": {
@@ -125,25 +125,6 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
-      }
-    },
-    "vscode-local": {
-      "inputs": {
-        "flake-utils": "flake-utils",
-        "nix-vscode-extensions": "nix-vscode-extensions",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1,
-        "narHash": "sha256-x+C5pIS3Xj/To8dcEacM0K5CKXO7qlGke01p6b25SVY=",
-        "path": "/nix/store/c1glv2z8jqgvslp3cv0kskss5l61j9za-source/pkgs/vscode",
-        "type": "path"
-      },
-      "original": {
-        "path": "/nix/store/c1glv2z8jqgvslp3cv0kskss5l61j9za-source/pkgs/vscode",
-        "type": "path"
       }
     }
   },
