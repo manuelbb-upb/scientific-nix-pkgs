@@ -53,6 +53,3 @@ runCommand "${julia-bin.pname}-ld-${julia-bin.version}" {
   EOF
   chmod a+x $out/bin/julia
 ''
-#   echo ${lib.escapeShellArg NIX_LD} 
-#    --set "NIX_LD_LIBRARY_PATH" ${lib.escapeShellArg julia_LD_LIBRARY_PATH} \
-#    --set "MATLAB_ROOT" "''${${matlab-dir-env-var}}"

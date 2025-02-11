@@ -1,37 +1,44 @@
 {
-  description = "Python Template";
+  description = "Python wrapped for Matlab";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nix-matlab-ld = {
-      url = "github:manuelbb-upb/nix-matlab-ld";
+    scientific-nix-pkgs = {
+      url = "github:manuelbb-upb/scientific-nix-pkgs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
   outputs = {
     nixpkgs,
-    nix-matlab-ld,
+    scientific-nix-pkgs,
     ...
   }:
   let 
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-    otherPkgs = nix-matlab-ld.packages.${system};
-    tools = nix-matlab-ld.tools.${system};
-    
+    spkgs = scientific-nix-pkgs.packages.${system};
+
+    python-ld = spkgs.python-ld.override {
+      python3 = pkgs.python312;
+    };
+
+    matlab-engine = scientific-nix-pkgs.matlab-engine;
+
+    python = python-ld.withPackages (py-pkgs: [
+      (matlab-engine py-pkgs)
+    ] ++ (with py-pkgs; [
+      numpy
+    ]));
   in {
     devShells.${system}.default = pkgs.mkShell {
       packages = [
-          # default Python version:
-          # otherPkgs.python
-          # custom python version and matlab package preinstalled
-          ((tools.python-patcher pkgs.python312).withPackages (py-pkgs: with py-pkgs; [
-            matlab
-          ]))
-      ];
-      shellHook = nix-matlab-ld.ld-shellHook;
+        python
+      ] ++ (with pkgs; [
+        # standard packages here
+      ]);
+      #shellHook = scientific-nix-pkgs.matlab.shellHook;
     };
   };
 }
