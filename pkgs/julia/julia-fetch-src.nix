@@ -44,5 +44,5 @@ let
 in 
 fetchurl {
   inherit url;
-  sha256 = version-info.v; 
+  sha256 = version-info.s; 
 }

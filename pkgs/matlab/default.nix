@@ -1,14 +1,13 @@
 {
-  callPackage,
+  callOurPackage,
   lib,
-  writeShellScriptBin,
+  writeShellApplication,
   mkShell,
-  NIX_LD ? "",
+  NIX_LD,
   dir-env-var ? "MATLAB_INSTALL_DIR",
 }:
 let
-  NIX_LD = callPackage ../nix-ld-env-var.nix;
-  matlab-deps = callPackage ./matlab-deps.nix;
+  matlab-deps = callOurPackage ./matlab-deps.nix {};
   matlab_LD_LIBRARY_PATH = lib.makeLibraryPath matlab-deps;
 
   # Now for the actual Matlab package(s).
@@ -28,11 +27,18 @@ let
   };
   bin-path = "\${${dir-env-var}}/bin/matlab";
 
-  matlab = writeShellScriptBin "matlab" ''
-    ${matlab-shellHook}
-    exec -a "$0" ${bin-path} "$@"
-  ''; 
+  matlab-pkg = writeShellApplication { 
+    name = "matlab";
+    passthru = {
+      inherit dir-env-var;
+      shell = matlab-shell;
+      LD_LIBRARY_PATH = matlab_LD_LIBRARY_PATH;
+      shellHook = matlab-shellHook;
+    };
+    text = ''
+      ${matlab-shellHook}
+      exec -a "$0" ${bin-path} "$@"
+    ''; 
+  };
 in
-{
-  inherit matlab_LD_LIBRARY_PATH matlab-shellHook matlab-shell matlab;
-}
+matlab-pkg
