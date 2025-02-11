@@ -3,3 +3,4 @@ poetry.lock
 pyproject.toml
 *.swp
 .local*
+local_user_data
