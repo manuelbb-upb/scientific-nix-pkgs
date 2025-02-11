@@ -1,9 +1,6 @@
-/* This list of dependencies is based on the official Mathworks dockerfile for
-   R2020a, available at
-     https://github.com/mathworks-ref-arch/container-images
-*/
-pkgs:
-
+{
+  pkgs,
+}:
 (with pkgs; [
   cacert
   alsa-lib # libasound2
@@ -30,6 +27,8 @@ pkgs:
   unzip
   zlib
   linux-pam
+
+  libgcc.lib
 
   # These packages are needed since 2021b version
   #gnome2.gtk

@@ -1,8 +1,11 @@
 {
   lib,
   fetchurl,
+  version ? "1.11.1",
+  sha-for-version ? ""
 }:
 let
+  # command to get hash:
   # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --unpack --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.1-linux-x86_64.tar.gz)
 
   version-sha256 = {
@@ -23,19 +26,23 @@ let
     "1.6.7" = "sha256-bEUi1ZXky80AFXrEWKcviuwBdXBT0gc/mdqjnkQrKjY=";
   };
 
-  julia-fetch-src = version: (sha-for-version: let
-    url = "https://julialang-s3.julialang.org/bin/linux/x64/${
-      lib.versions.majorMinor version
-    }/julia-${version}-linux-x86_64.tar.gz";
-  in fetchurl {
-    inherit url;
-    sha256 = (if sha-for-version == "" then
-      (if (builtins.hasAttr version version-sha256) then
-        version-sha256.${version}
-      else
-        version-sha256."1.11.1")
-     else
-      sha-for-version);
-    });
-in
-  julia-fetch-src
+  version-info = (
+    if sha-for-version == "" then
+      (
+        if (builtins.hasAttr version version-sha256) then
+          { v = version; s = version-sha256.${version}; }
+        else
+          { v = "1.11.1"; s = version-sha256."1.11.1"; }
+      )
+    else
+      { v = version; s = sha-for-version;} 
+  );
+
+  url = "https://julialang-s3.julialang.org/bin/linux/x64/${
+    lib.versions.majorMinor version-info.v
+  }/julia-${version-info.v}-linux-x86_64.tar.gz";
+in 
+fetchurl {
+  inherit url;
+  sha256 = version-info.v; 
+}
