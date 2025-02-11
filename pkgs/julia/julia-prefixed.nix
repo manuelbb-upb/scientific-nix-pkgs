@@ -9,6 +9,8 @@
   sha-for-version ? "",
   add-opengl-libs ? true,
   enable-matlab ? false,
+  pre_LD_LIBRARY_PATH ? "",
+  post_LD_LIBRARY_PATH ? ""
 }:
 
 let
@@ -29,10 +31,11 @@ let
   # Here it gets complicated.
   # We explicitly add the Julia libs to the library path **before** the 
   # system libs, hoping that they get sourced first.
-  julia_LD_LIBRARY_PATH = "" + 
+  julia_LD_LIBRARY_PATH = pre_LD_LIBRARY_PATH + 
     "${julia-bin}/lib:${julia-bin}/lib/julia:" +
     lib.optionalString add-opengl-libs "/run/opengl-driver/lib:" +
-    matlab_LD_LIBRARY_PATH;
+    matlab_LD_LIBRARY_PATH + 
+    post_LD_LIBRARY_PATH;
   
   csh-path = if enable-matlab then "${csh}/bin" else "";
 in
