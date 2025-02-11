@@ -137,12 +137,12 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-x+C5pIS3Xj/To8dcEacM0K5CKXO7qlGke01p6b25SVY=",
-        "path": "/nix/store/c1glv2z8jqgvslp3cv0kskss5l61j9za-source/pkgs/vscode",
+        "narHash": "sha256-iSQciHTWpBi95sfaOQ9GGBYRU7lXwq/DUmk4epoclB4=",
+        "path": "/nix/store/s33117w28d8v9p9qyckd0bjfsj1r539h-source/pkgs/vscode",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/c1glv2z8jqgvslp3cv0kskss5l61j9za-source/pkgs/vscode",
+        "path": "/nix/store/s33117w28d8v9p9qyckd0bjfsj1r539h-source/pkgs/vscode",
         "type": "path"
       }
     }

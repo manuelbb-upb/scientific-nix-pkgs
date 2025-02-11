@@ -39,7 +39,9 @@
 				# direnv chooser:
 				mkhl.direnv
 			];
-			vscodium-with-defaults = callPackage ./with-default-exts {};
+			vscodium-with-defaults = callPackage ./with-default-exts.nix {
+				inherit default-extensions;
+			};
 			vscodium-local = callPackage ./with-local-data.nix {
 				vscodium = vscodium-with-defaults;
 			};

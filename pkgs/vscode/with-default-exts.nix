@@ -10,5 +10,4 @@ in
 vscode-with-extensions.override {
   inherit vscodeExtensions;
 	vscode = vscodium;
-};
-
+}
