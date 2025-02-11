@@ -56,6 +56,7 @@
 
     devShells.${system}.default = pkgs.matlab.shell;
 
+    /*
     templates = {
       julia = {
         description = "Devshell with unpatched Julia and preseeded library path";
