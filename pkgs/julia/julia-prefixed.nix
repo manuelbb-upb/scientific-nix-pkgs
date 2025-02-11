@@ -1,17 +1,22 @@
 {
+  callOurPackage,
   lib,
   runCommand,
-  makeWrapper,
   csh,
-  NIX_LD ? "",
-  julia-bin,
+  NIX_LD,
+  matlab,
+  version ? "1.11.1",
+  sha-for-version ? "",
   add-opengl-libs ? true,
   enable-matlab ? false,
-  matlab_LD_LIBRARY_PATH ? "",
 }:
 
 let
+  julia-bin = callOurPackage ./julia-make-bin.nix {};
 
+  # If building matlab was actual work, we would have to think about lazyDerivation here:
+  matlab_LD_LIBRARY_PATH = lib.optionalString enable-matlab matlab.LD_LIBRARY_PATH;
+  matlab-root = if enable-matlab then "\${${matlab.dir-env-var}}" else "";
   # If it weren't for our peculiar needs, we should just set this to the
   # empty string.
   # Our wrapper **replaces** the system-wide `NIX_LD_LIBRARY_PATH` with this
@@ -27,27 +32,24 @@ let
   julia_LD_LIBRARY_PATH = "" + 
     "${julia-bin}/lib:${julia-bin}/lib/julia:" +
     lib.optionalString add-opengl-libs "/run/opengl-driver/lib:" +
-    lib.optionalString enable-matlab matlab_LD_LIBRARY_PATH;
-
-  NIX_LD = callPackage ../nix-ld-env-var.nix;
+    matlab_LD_LIBRARY_PATH;
   
   csh-path = if enable-matlab then "${csh}/bin" else "";
 in
 runCommand "${julia-bin.pname}-ld-${julia-bin.version}" {
   inherit (julia-bin) pname version;
-  buildInputs = [
-    julia-bin
-    tcsh
-    makeWrapper   # to have shell script `wrapProgram` available
-  ];
 } ''
-  mkdir $out
-  mkdir $out/bin
-  ln -s ${julia-bin}/bin/julia $out/bin/julia
-  chmod -R u+w $out
-  wrapProgram $out/bin/julia \
-    --prefix "PATH" : "${csh-path}" \
-    --set "NIX_LD" "${NIX_LD}" \
-    --set "NIX_LD_LIBRARY_PATH" "${julia_LD_LIBRARY_PATH}" \
-    --set "MATLAB_ROOT" "''${MATLAB_INSTALL_DIR}"
+  mkdir -p $out/bin
+  cat << "EOF" > $out/bin/julia
+    #! /usr/bin/env bash
+    export PATH="${csh-path}:''${PATH}"
+    export NIX_LD="${NIX_LD}"
+    export NIX_LD_LIBRARY_PATH="${julia_LD_LIBRARY_PATH}"
+    export MATLAB_ROOT="${matlab-root}"
+    exec -a "$0" "${julia-bin}/bin/julia" "$@"
+  EOF
+  chmod a+x $out/bin/julia
 ''
+#   echo ${lib.escapeShellArg NIX_LD} 
+#    --set "NIX_LD_LIBRARY_PATH" ${lib.escapeShellArg julia_LD_LIBRARY_PATH} \
+#    --set "MATLAB_ROOT" "''${${matlab-dir-env-var}}"

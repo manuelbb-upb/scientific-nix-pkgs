@@ -1,10 +1,12 @@
 {
+  callOurPackage,
   runCommand,
-  julia-src,
   version ? "1.11.1",
+  sha-for-version ? ""
 }:
 let
-  pname = "julia"
+  pname = "julia";
+  julia-src = callOurPackage ./julia-fetch-src.nix {};
 in
 runCommand "${pname}-${version}" {
   inherit pname version;
@@ -15,4 +17,4 @@ runCommand "${pname}-${version}" {
 
   chmod -R u+w $out
   chmod a+x $out/bin/julia
-'';
+''

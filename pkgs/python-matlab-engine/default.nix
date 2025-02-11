@@ -1,14 +1,11 @@
 {
   formats,
   lib,
-  root ? "\${MATLAB_INSTALL_DIR}",
+  matlab,
   pname ? "matlab",
   version ? "0.0.1",
 }:
 py-pkgs:
-
-assert lib.isString root;
-
 let
   # The file `path_hook.py` defines a hook for `sys.meta_path` to
   # generate the architecture file if `matlab` or `matlab.engine` is
@@ -79,7 +76,7 @@ in
       # Write `_matlab.pth`.
       # Lines starting with `import` are executed.
       cat <<- "EOF" > "_${pname}.pth"
-      import os, sys; sys.path.insert(0, os.path.join(os.path.expandvars("${root}"), "extern", "engines", "python", "dist"));
+      import os, sys; sys.path.insert(0, os.path.join(os.path.expandvars("''$${matlab.dir-env-var}"), "extern", "engines", "python", "dist"));
       import path_hook  # executes code to prepend to sys.meta_path
       EOF
     '';

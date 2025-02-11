@@ -8,50 +8,53 @@
     # As far as I know, Matlab only works on x86:
     system = "x86_64-linux";
     # Propagate function arguments lazily with callPackage pattern, see
-    # https://nixos.org/guides/nix-pills/13-callpackage-design-pattern.html
-    nixpkgs = import nixpkgs { inherit system; };
-    allPkgs = nixpkgs // pkgs;
-    callPackage =
+    # https://nixos.org/guides/nix-pills/13-callOurPackage-design-pattern.html
+    npkgs = import nixpkgs { inherit system; };
+    allPkgs = npkgs // pkgs;
+    callOurPackage =
       path: overrides:
       let
         f = import path;
       in
-        f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // overrides);
-
-    pkgs = rec {
-      NIX_LD = callPackage ./pkgs/nix-ld-env-var.nix;
-      # define LD_LIBRARY_PATH prefixes and matlab package;
-      matlab-set = callPackage ./pkgs/matlab/default.nix {
+        npkgs.lib.makeOverridable f ((builtins.intersectAttrs (builtins.functionArgs f) allPkgs) // overrides);
+    
+    pkgs = with npkgs; rec {
+      inherit callOurPackage;
+      
+      NIX_LD = callOurPackage ./pkgs/nix-ld-env-var.nix {};
+      
+      matlab = callOurPackage ./pkgs/matlab/default.nix {
         dir-env-var = "MATLAB_INSTALL_DIR";
       };
-      inherit (matlab-set) matlab_LD_LIBRARY_PATH matlab-shellHook matlab-shell matlab; 
-    
+      
       # wrap `tcsh` such that it can be called as `csh`:
-      csh = callPackage ./pkgs/csh.nix;
+      csh = callOurPackage ./pkgs/csh/default.nix {};
 
-      julia-set = callPackage ./pkgs/julia/default.nix {
-        version = "1.11.1";
-        sha-for-version = "";
-        add-opengl-libs = true;
-        enable-matlab = false;
+      julia-set = callOurPackage ./pkgs/julia/default.nix {
+        version = "1.11.1";       # julia version to download
+        sha-for-version = "";     # sha-256 string for version not yet indexed here
+        add-opengl-libs = true;   # modify LD_LIBRARY_PATH to include opengl drivers
+        enable-matlab = false;    # modify LD_LIBRARY_PATH to support MATLAB
       };
       inherit (julia-set) julia-bin julia-ld;
-    };
 
+      python-ld = callOurPackage ./pkgs/python/default.nix {};
+
+      matlab-engine = callOurPackage ./pkgs/python-matlab-engine/default.nix {};
+
+      python-with-mlab = python-ld.withPackages (pypkgs: [ (matlab-engine pypkgs) ]);
+
+      poetry-ld = callOurPackage ./pkgs/poetry/default.nix {};
+    };
   in
   rec {
-    inherit (pkgs) matlab-shellHook matlab_LD_LIBRARY_PATH NIX_LD;
+    inherit (pkgs) NIX_LD matlab-engine;
     # make patched packages availabe:
     packages.${system} = {
-      inherit (pkgs) csh julia-bin julia-ld matlab matlab-shell;
+      inherit (pkgs) csh julia-bin julia-ld matlab python-ld python-with-mlab poetry-ld;
     };
 
-    devShells.${system}.default = pkgs.matlab-shell;
-
-    /*
-    tools.${system} = {
-      inherit (pkgs-patched) python-patcher;
-    };
+    devShells.${system}.default = pkgs.matlab.shell;
 
     templates = {
       julia = {

@@ -1,7 +1,9 @@
 {
   lib,
   stdenv,
-  NIX_LD ? ""
 }:
-if NIX_LD != "" then NIX_LD else
-  lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+let 
+  #env-var = lib.fileContents "${stdenv.cc}/nix-support/dynamic-linker";
+  env-var = "$(cat '${stdenv.cc}/nix-support/dynamic-linker')";
+in
+  env-var
