@@ -37,7 +37,7 @@ let
     };
     text = ''
       ${matlab-shellHook}
-      exec -a "$0" ${bin-path} "$@"
+      exec -a "$0" "${bin-path}" "$@"
     ''; 
   };
 in
