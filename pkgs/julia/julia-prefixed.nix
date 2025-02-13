@@ -46,7 +46,8 @@ runCommand "${julia-bin.pname}-ld-${julia-bin.version}" {
   cat << "EOF" > $out/bin/julia
     #! /usr/bin/env bash
     export PATH="${csh-path}:''${PATH}"
-    export NIX_LD="${NIX_LD}"
+    NIX_LD="${NIX_LD}"
+    export NIX_LD
     export NIX_LD_LIBRARY_PATH="${julia_LD_LIBRARY_PATH}"
     export MATLAB_ROOT="${matlab-root}"
     exec -a "$0" "${julia-bin}/bin/julia" "$@"

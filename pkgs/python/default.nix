@@ -30,7 +30,8 @@ let
 	# OTHERWISE THE SHEBANG LINE IS NOT RESPECTED AND BINARY WRAPPERS CANNOT CALL THE SCRIPT
 	cat <<-'EOF' > $out/bin/${py-exe}
 		#!${runtimeShell}
-		export NIX_LD="${NIX_LD}"
+                NIX_LD="${NIX_LD}"
+                export NIX_LD
 		export LD_LIBRARY_PATH="${matlab.LD_LIBRARY_PATH}"
 		exec -a "$0" "${python3}/bin/${py-exe}" "$@"
 	EOF
