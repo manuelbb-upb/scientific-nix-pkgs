@@ -6,10 +6,12 @@
 }:
 let
   pname = "julia";
-  julia-src = callOurPackage ./julia-fetch-src.nix {};
+  julia-src = callOurPackage ./julia-fetch-src.nix { inherit version sha-for-version; };
+  resolved-version = julia-src.version;
 in
-runCommand "${pname}-${version}" {
-  inherit pname version;
+runCommand "${pname}-${resolved-version}" {
+  inherit pname;
+  version = resolved-version;
   src = julia-src;
 } ''
   mkdir $out

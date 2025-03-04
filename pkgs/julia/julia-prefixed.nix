@@ -14,7 +14,7 @@
 }:
 
 let
-  julia-bin = callOurPackage ./julia-make-bin.nix {};
+  julia-bin = callOurPackage ./julia-make-bin.nix { inherit version sha-for-version; };
 
   # If building matlab was actual work, we would have to think about lazyDerivation here:
   matlab_LD_LIBRARY_PATH = lib.optionalString enable-matlab matlab.LD_LIBRARY_PATH;

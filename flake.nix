@@ -36,7 +36,7 @@
       csh = callOurPackage ./pkgs/csh/default.nix {};
 
       julia-set = callOurPackage ./pkgs/julia/default.nix {
-        version = "1.11.1";       # julia version to download
+        version = "1.11.2";       # julia version to download
         sha-for-version = "";     # sha-256 string for version not yet indexed here
         add-opengl-libs = true;   # modify LD_LIBRARY_PATH to include opengl drivers
         enable-matlab = false;    # modify LD_LIBRARY_PATH to support MATLAB
