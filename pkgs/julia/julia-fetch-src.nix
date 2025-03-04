@@ -9,6 +9,8 @@ let
   # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --unpack --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.1-linux-x86_64.tar.gz)
 
   version-sha256 = {
+    "1.11.3" = "sha256-WKNujLW5QKM2BnYaXVvo17wSn1zx48SZCr/clWB5YJg=";
+    "1.11.2" = "sha256-Nuus4LreKlaEtv4sXRgwoVXpYjuch4WtEs3cyj3ZXYA=";
     "1.11.1" = "sha256-zKjRPcRQfk9ioSkyIpMxPuV08wDU3559swt7QcX4qPM=";
     "1.11.0" = "sha256-vPgVVT/aLteRBSTIyqGJyOgZGkCnmd2LX77Q2d1riCw=";
     "1.10.6" = "sha256-i1NCnhdYXGZHaznysiedogfqDzEMVds480EL3U9qPUk=";
