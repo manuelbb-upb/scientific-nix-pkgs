@@ -138,11 +138,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-iSQciHTWpBi95sfaOQ9GGBYRU7lXwq/DUmk4epoclB4=",
-        "path": "/nix/store/advbz6q81yr8s951jhlpin1bbfxp918a-source/pkgs/vscode",
+        "path": "/nix/store/2ll85lqz0ncjlh1f273dvzm4k4q4b5lb-source/pkgs/vscode",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/advbz6q81yr8s951jhlpin1bbfxp918a-source/pkgs/vscode",
+        "path": "/nix/store/2ll85lqz0ncjlh1f273dvzm4k4q4b5lb-source/pkgs/vscode",
         "type": "path"
       }
     }
