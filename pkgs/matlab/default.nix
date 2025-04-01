@@ -24,6 +24,7 @@ let
   '';
 
   matlab-shell = mkShell {
+    name = "matlab-shell";
     shellHook = matlab-shellHook;
   };
   bin-path = "\${${dir-env-var}}/bin/matlab";
