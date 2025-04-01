@@ -24,9 +24,16 @@ let
   '';
 
   matlab-shell = mkShell {
-    name = "matlab-shell";
     shellHook = matlab-shellHook;
   };
+
+  matlab-shell-script = writeShellApplication {
+    name = "matlab-shell";
+    text = ''
+      ${matlab-shellHook}
+      exec "$0"
+    '';
+  }
   bin-path = "\${${dir-env-var}}/bin/matlab";
 
   matlab-pkg = writeShellApplication { 
@@ -34,6 +41,7 @@ let
     passthru = {
       inherit dir-env-var;
       shell = matlab-shell;
+      shell-script = matlab-shell-script;
       LD_LIBRARY_PATH = matlab_LD_LIBRARY_PATH;
       shellHook = matlab-shellHook;
     };
