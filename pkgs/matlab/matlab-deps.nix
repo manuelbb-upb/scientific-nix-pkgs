@@ -36,7 +36,6 @@
   at-spi2-atk
   at-spi2-core
   libdrm
-  mesa.drivers
 
   mesa
 
