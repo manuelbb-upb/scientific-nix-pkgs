@@ -33,7 +33,7 @@ let
       ${matlab-shellHook}
       exec "$0"
     '';
-  }
+  };
   bin-path = "\${${dir-env-var}}/bin/matlab";
 
   matlab-pkg = writeShellApplication { 
