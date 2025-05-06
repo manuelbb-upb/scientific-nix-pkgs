@@ -6,9 +6,10 @@
 }:
 let
   # command to get hash:
-  # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.1-linux-x86_64.tar.gz)
+  # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.4-linux-x86_64.tar.gz)
 
   version-sha256 = {
+    "1.11.4" = "sha256-+z08X8zvghWKcGd8AESsWuQEEOzrBgTNyOZD7v8h340=";
     "1.11.3" = "sha256-fUjaQWyMtFWCoShdYBJ+4x73CS3tPsWUqfLPWEMcB/0=";
     "1.11.2" = "sha256-ijcq0mLU1NVaEET0/jvOfJpKPOjFE9JHDljoBx7s1HY=";
     "1.11.1" = "sha256-zKjRPcRQfk9ioSkyIpMxPuV08wDU3559swt7QcX4qPM=";
