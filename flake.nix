@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     vscode-local = {
-      url = ./pkgs/vscode;
+      url = "./pkgs/vscode";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
