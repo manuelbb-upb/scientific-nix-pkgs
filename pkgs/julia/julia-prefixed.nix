@@ -5,9 +5,9 @@
 	csh,
 	NIX_LD,
 	matlab,
-	version ? "1.11.1",
+	version ? "1.11.4",
 	sha-for-version ? "",
-	add-opengl-libs ? true,
+	add-opengl-libs ? false,
 	enable-matlab ? false,
 	pre_LD_LIBRARY_PATH ? "",
 	post_LD_LIBRARY_PATH ? ""
@@ -25,8 +25,8 @@ let
 	# string.
 	# If there is weird stuff in this path, then Julia will do weird things.
 	# It usually is sensitive to fickling with `LD_LIBRARY_PATH`.
-	# For `GLMakie` however, we want `/run/opengl-driver/lib` to be visible.
-	# That is easy enough.
+	# ~~For `GLMakie` however, we want `/run/opengl-driver/lib` to be visible.
+	# That is easy enough~~ This is not true anymore.
 	# But we also need the `matlab_LD_LIBRARY_PATH` for `MATLAB.jl` to work.
 	# Here it gets complicated.
 	# We explicitly add the Julia libs to the library path **before** the 
