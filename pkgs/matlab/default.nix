@@ -31,7 +31,7 @@ let
     name = "matlab-shell";
     text = ''
       ${matlab-shellHook}
-      exec "$0"
+      exec "$@"
     '';
   };
   bin-path = "\${${dir-env-var}}/bin/matlab";
