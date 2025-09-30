@@ -1,5 +1,6 @@
 {
   callOurPackage,
+  libgcc,
   lib,
   writeShellApplication,
   mkShell,
@@ -19,6 +20,9 @@ let
     # define dynamic linker:
     NIX_LD="${NIX_LD}"
     export NIX_LD
+
+    LD_PRELOAD="${libgcc.lib.outPath}/lib/libstdc++.so.6"
+    export LD_PRELOAD
     # tell `envfs` to simulate files to exist in `/bin` and `/usr/bin`:
     export ENVFS_RESOLVE_ALWAYS=1
   '';

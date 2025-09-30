@@ -2,6 +2,7 @@
   pkgs,
 }:
 (with pkgs; [
+  freetype
   cacert
   alsa-lib # libasound2
   atk
@@ -59,6 +60,8 @@
   libxcrypt
   libxcrypt-legacy
 
+  # 2024
+  libgbm
 ]) ++ (with pkgs.xorg; [
   libSM
   libX11
@@ -76,4 +79,7 @@
   libXt
   libXtst
   libXxf86vm
+
+  # Needed since 2025
+  libICE
 ])
