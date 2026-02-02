@@ -9,6 +9,15 @@ let
   # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.4-linux-x86_64.tar.gz)
 
   version-sha256 = {
+    "1.12.4" = "sha256-xXuvF4/hQJJqyxolOW1ILzJa+deQjZsGbS+8DWY5mF0=";
+    "1.12.3" = "sha256-j3vVD3Ryrk66jF323jE0XZzi2hfiK5T/3+YDrKr2uRI=";
+    "1.12.2" = "sha256-ptDDnqVzA+vP+nqNRTQpuG6yceFQx8sPWVj+ZZCbSTo=";
+    "1.12.1" = "sha256-fSrdnudO4vErXCaLwZR5TMUupED4aH+6sp22r++/abc=";
+    "1.12.0" = "sha256-b4e4/PXvanNx6MedlIrt+guijORER8RG19gucPAVjag=";
+    "1.11.8" = "sha256-Jq2QMbDJhXzejIms7YaZDRhCpVGUC/snXoNyEI5XzFA=";
+    "1.11.7" = "sha256-qlkkEU7Lif00HlmqiYzRiCs8tiLKSXJYLBUY7/X2jAU=";
+    "1.11.6" = "sha256-6Z5S4gKdhFCXxo8jctg2GG8Os/uJep3eC9+e6SUNA9U=";
+    "1.11.5" = "sha256-cj6HjGQiIMwCUaDhN1jAWaOJytx/ATdv6vHqc4j+j5w=";
     "1.11.4" = "sha256-+z08X8zvghWKcGd8AESsWuQEEOzrBgTNyOZD7v8h340=";
     "1.11.3" = "sha256-fUjaQWyMtFWCoShdYBJ+4x73CS3tPsWUqfLPWEMcB/0=";
     "1.11.2" = "sha256-ijcq0mLU1NVaEET0/jvOfJpKPOjFE9JHDljoBx7s1HY=";

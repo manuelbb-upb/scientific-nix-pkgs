@@ -20,8 +20,9 @@
     pkgs = nixpkgs.legacyPackages.${system};
     spkgs = scientific-nix-pkgs.packages.${system};
     julia = spkgs.julia-ld.override {
-      version = "1.11.4";     # julia version to download
+      version = "1.12.4";     # julia version to download
       sha-for-version = "";   # sha-256 hash in case the version is not yet registered in `scientific-nix-pkgs`
+                              # nix hash convert --hash-algo sha256 --from nix32 $(nix-prefetch-url --type sha256 https://julialang-s3.julialang.org/bin/linux/x64/1.12/julia-1.12.5-linux-x86_64.tar.gz)
       add-opengl-libs = true; # modify NIX_LD_LIBRARY_PATH to include opengl drivers for GLMakie etc.
       enable-matlab = false;   # whether to 
                               # * add matlab paths to NIX_LD_LIBRARY_PATH 
